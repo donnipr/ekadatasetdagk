@@ -68,7 +68,7 @@ export function BarChartBagian({ data }: { data: AggregateData[] }) {
               tick={{ fill: '#64748b', fontSize: 12 }}
             />
             <Tooltip 
-              formatter={(value: number, name: string) => [
+              formatter={(value: any, name: any) => [
                 formatRupiah(value), 
                 name === 'pagu_anggaran' ? 'Pagu Anggaran' : 'Realisasi Nominal'
               ]}
