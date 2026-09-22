@@ -18,16 +18,27 @@ async function getAdminClient() {
   )
 }
 
-export async function saveRekapSetting(tahun: string, sheetUrl: string) {
+export async function saveRekapSetting(tahun: string, sheetUrl: string, id?: string) {
   try {
     const supabase = await getAdminClient()
     
-    const { error } = await supabase
-      .from('settings_rekapitulasi')
-      .upsert(
-        { tahun, sheet_url: sheetUrl, last_sync: new Date().toISOString() },
-        { onConflict: 'tahun' }
-      )
+    let error;
+
+    if (id) {
+      const { error: updateError } = await supabase
+        .from('settings_rekapitulasi')
+        .update({ tahun, sheet_url: sheetUrl, last_sync: new Date().toISOString() })
+        .eq('id', id)
+      error = updateError
+    } else {
+      const { error: upsertError } = await supabase
+        .from('settings_rekapitulasi')
+        .upsert(
+          { tahun, sheet_url: sheetUrl, last_sync: new Date().toISOString() },
+          { onConflict: 'tahun' }
+        )
+      error = upsertError
+    }
 
     if (error) throw error
     

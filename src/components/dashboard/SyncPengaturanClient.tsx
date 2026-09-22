@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2, Link2, Download, ArrowLeft, Database } from 'lucide-react'
+import { Plus, Trash2, Link2, Download, ArrowLeft, Database, Pencil } from 'lucide-react'
 import { saveRekapSetting, deleteRekapSetting } from '@/app/actions/rekapSettings'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -13,6 +13,7 @@ export function SyncPengaturanClient({ settings }: { settings: SettingsData[] })
   // Form state
   const [formTahun, setFormTahun] = useState('')
   const [formUrl, setFormUrl] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState<{type: 'error'|'success', text: string} | null>(null)
   
@@ -24,11 +25,12 @@ export function SyncPengaturanClient({ settings }: { settings: SettingsData[] })
     setIsSubmitting(true)
     setMessage(null)
     
-    const res = await saveRekapSetting(formTahun, formUrl)
+    const res = await saveRekapSetting(formTahun, formUrl, editingId || undefined)
     if (res.success) {
       setMessage({ type: 'success', text: res.message || '' })
       setFormTahun('')
       setFormUrl('')
+      setEditingId(null)
       router.refresh()
     } else {
       setMessage({ type: 'error', text: res.error || '' })
@@ -93,7 +95,9 @@ export function SyncPengaturanClient({ settings }: { settings: SettingsData[] })
           {/* Panel Kiri: Form Tambah Sumber Data */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <h2 className="text-lg font-bold text-slate-800 mb-5">Tambah Sumber Data</h2>
+              <h2 className="text-lg font-bold text-slate-800 mb-5">
+                {editingId ? 'Edit Sumber Data' : 'Tambah Sumber Data'}
+              </h2>
               
               <form onSubmit={handleSaveSetting} className="space-y-4">
                 <div>
@@ -118,14 +122,27 @@ export function SyncPengaturanClient({ settings }: { settings: SettingsData[] })
                     className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm transition-colors"
                   />
                 </div>
-                <div className="pt-2">
+                <div className="pt-2 flex gap-2">
                   <button 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="w-full flex justify-center items-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 transition-colors"
+                    className="flex-1 flex justify-center items-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-70 transition-colors"
                   >
-                    {isSubmitting ? 'Menyimpan...' : <><Plus className="h-5 w-5 mr-1" /> Simpan Data</>}
+                    {isSubmitting ? 'Menyimpan...' : <><Plus className="h-5 w-5 mr-1" /> {editingId ? 'Update Data' : 'Simpan Data'}</>}
                   </button>
+                  {editingId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingId(null)
+                        setFormTahun('')
+                        setFormUrl('')
+                      }}
+                      className="px-4 py-2.5 border border-gray-300 text-sm font-semibold rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors"
+                    >
+                      Batal Edit
+                    </button>
+                  )}
                 </div>
               </form>
             </div>
@@ -176,6 +193,20 @@ export function SyncPengaturanClient({ settings }: { settings: SettingsData[] })
                           ) : (
                             <><Download className="h-3.5 w-3.5 mr-1.5" /> Tarik Data Sekarang</>
                           )}
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            setFormTahun(item.tahun)
+                            setFormUrl(item.sheet_url)
+                            setEditingId(item.id)
+                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                          }}
+                          disabled={syncingRow !== null}
+                          className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors focus:outline-none"
+                          title="Edit"
+                        >
+                          <Pencil className="h-4 w-4" />
                         </button>
                         
                         <button
