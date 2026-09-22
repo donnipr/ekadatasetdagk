@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Settings, FolderOpen, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Settings, FolderOpen, ChevronLeft, ChevronRight, BarChart } from 'lucide-react'
 
 export function Sidebar({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname()
@@ -20,6 +20,12 @@ export function Sidebar({ isAdmin }: { isAdmin: boolean }) {
       name: 'Program Kegiatan',
       href: '/kegiatan',
       icon: FolderOpen,
+      show: true,
+    },
+    {
+      name: 'Rekapitulasi Capaian',
+      href: '/rekapitulasi',
+      icon: BarChart,
       show: true,
     },
     {
