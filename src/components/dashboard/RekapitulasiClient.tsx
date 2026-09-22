@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { RefreshCw, Search, Wallet, TrendingUp, PiggyBank, ArrowUpDown } from 'lucide-react'
+import { RefreshCw, Search, Wallet, TrendingUp, Banknote, ArrowUpDown } from 'lucide-react'
 import Link from 'next/link'
 
 export interface RekapitulasiData {
@@ -167,7 +167,7 @@ export function RekapitulasiClient({
         </div>
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center gap-4">
           <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
-            <PiggyBank className="h-6 w-6" />
+            <Banknote className="h-6 w-6" />
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500">Total Realisasi</p>
